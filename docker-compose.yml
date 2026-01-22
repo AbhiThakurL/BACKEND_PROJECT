@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: chapter-a-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.development
+    depends_on:
+      - redis
+      - mongodb  # MongoDB ka intezaar karega
+    environment:
+      # Code mein environment variables in names se match karne chahiye
+      REDIS_URL: redis://redis:6379
+      MONGODB_URI: mongodb://mongodb:27017/chapter-a
+    restart: always
+
+  redis:
+    image: redis:7-alpine # Alpine version chota aur fast hota hai
+    container_name: chapter-a-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  mongodb:
+    image: mongo:latest
+    container_name: chapter-a-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db # Data permanent rahega, container delete hone pe bhi
+    restart: always
+
+volumes:
+  mongo-data: # Permanent storage for DB
